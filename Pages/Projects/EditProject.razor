@@ -1,0 +1,62 @@
+﻿
+
+@using BugBlaze.Data.Models
+
+@page "/editemployee/{id}"
+
+@inject CustomHttpClient Http
+@inject NavigationManager NavigationManager
+@inject AppSettingsService AppSettingsService
+
+<h2>Edit Employee</h2>
+<hr />
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Project Name</label>
+                <input for="Name" class="form-control" @bind="@project.ProjectName" />
+            </div>
+            <div class="form-group">
+                <label for="Department" class="control-label">Description</label>
+                <input for="Department" class="form-control" @bind="@project.Description" />
+            </div>
+            <div class="form-group">
+                <label for="Designation" class="control-label">Language</label>
+                <input for="Designation" class="form-control" @bind="@project.Language" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="button" class="btn btn-primary" @onclick="@UpdateEmployee" value="Update" />
+            <input type="button" class="btn" @onclick="@Cancel" value="Cancel" />
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+    string baseUrl;
+
+    Project project = new Project();
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        project = await Http.GetJsonAsync<Project>(baseUrl + "/api/projectsapi/details/" + id);
+    }
+
+    protected async Task UpdateEmployee()
+    {
+        await Http.PutJsonAsync(baseUrl + "/api/projectsapi/edit/" + id, project);
+        NavigationManager.NavigateTo("listprojects");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("listprojects");
+    }
+}     

@@ -1,0 +1,58 @@
+﻿
+@using BugBlaze.Data.Models
+
+@page "/addproject"
+
+@inject CustomHttpClient Http
+@inject NavigationManager NavigationManager
+@inject AppSettingsService AppSettingsService
+
+<h3>Add Project</h3>
+
+<hr />
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Project Name</label>
+                <input for="Name" class="form-control" @bind="@project.ProjectName" />
+            </div>
+            <div class="form-group">
+                <label for="Department" class="control-label">Description</label>
+                <input for="Department" class="form-control" @bind="@project.Description" />
+            </div>
+            <div class="form-group">
+                <label for="Designation" class="control-label">Language</label>
+                <input for="Designation" class="form-control" @bind="@project.Language" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateNewProject" value="Save" />
+                <input type="button" class="btn" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@code {
+
+    Project project = new Project();
+    string baseUrl;
+
+    protected async Task CreateNewProject()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        await Http.PostJsonAsync(baseUrl + "/api/projects/create", project);
+        NavigationManager.NavigateTo("listprojects");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("listprojects");
+    }
+
+}

@@ -1,0 +1,57 @@
+﻿@using BugBlaze.Data.Models
+
+@page "/fetchdata"
+
+@inject CustomHttpClient Http
+@inject AppSettingsService AppSettingsService
+
+<h2>Employee Details</h2>
+<p>
+    <a href="/addproject">Create New Employee</a>
+</p>
+@if (projects == null)
+{
+    <img src="./basicloader.gif" />
+
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Company</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in projects)
+            {
+                <tr>
+                    <td>@project.ProjectName</td>
+                    <td>@project.Description</td>
+                    <td>@project.Language</td>
+                    <td>
+                        <a href='/editemployee/@project.Id'>Edit</a>
+                        <a href='/deleteemployee/@project.Id'>Delete</a>
+                    </td>
+                </tr>
+
+
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Project[] projects;
+    string baseUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        projects = await Http.GetJsonAsync<Project[]>(baseUrl + "/api/projects/get");
+    }
+}     
