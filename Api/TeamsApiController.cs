@@ -12,11 +12,11 @@ namespace BugBlaze.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeamsController : ControllerBase
+    public class TeamsApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public TeamsController(ApplicationDbContext context)
+        public TeamsApiController(ApplicationDbContext context)
         {
             _context = context;
         }

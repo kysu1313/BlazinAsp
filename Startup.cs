@@ -40,7 +40,6 @@ namespace BugBlaze
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<CustomHttpClient>();
             services.AddSingleton<AppSettingsService>();
         }

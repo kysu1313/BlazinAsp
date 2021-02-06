@@ -1,0 +1,71 @@
+﻿@using BugBlaze.Data.Models
+
+@page "/listbugs/{id}"
+
+@inject CustomHttpClient Http
+@inject AppSettingsService AppSettingsService
+
+<h2>Bugs</h2>
+<p>
+    <a href="/addproject">Create New Employee</a>
+</p>
+@if (bugs == null)
+{
+    <img src="./basicloader.gif" />
+
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Component</th>
+                <th>Company</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bug in bugs)
+            {
+                <tr>
+                    <td>@bug.Description</td>
+                    <td>@bug.Component</td>
+                    <td>@bug.</td>
+                    <td>
+                        <a href='/editbug/@bug.Id'>Edit</a>
+                        <a href='/deletebug/@bug.Id'>Delete</a>
+                    </td>
+                </tr>
+
+
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Bug[] bugs;
+    Project[] projects;
+    Project[] relatedProjects;
+    Dictionary<Bug, Project> items = new Dictionary<Bug, Project>();
+    public string id { get; set; }
+    string baseUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        bugs = await Http.GetJsonAsync<Bug[]>(baseUrl + "/api/bugsapi/get");
+        projects = await Http.GetJsonAsync<Project[]>(baseUrl + "/api/projectsapi/get");
+
+        foreach(Project project in projects)
+        {
+            if (project.Id == int.Parse(id))
+            {
+                relatedProjects.Append(project);
+            }
+        }
+
+    }
+}     

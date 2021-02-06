@@ -1,13 +1,13 @@
 ﻿@using BugBlaze.Data.Models
 
-@page "/fetchdata"
+@page "/listprojects"
 
 @inject CustomHttpClient Http
 @inject AppSettingsService AppSettingsService
 
-<h2>Employee Details</h2>
+<h2>Projects</h2>
 <p>
-    <a href="/addproject">Create New Employee</a>
+    <a href="/addproject">Create New Project</a>
 </p>
 @if (projects == null)
 {
@@ -33,8 +33,10 @@ else
                     <td>@project.Description</td>
                     <td>@project.Language</td>
                     <td>
-                        <a href='/editemployee/@project.Id'>Edit</a>
-                        <a href='/deleteemployee/@project.Id'>Delete</a>
+                        <a href='/createbug/@project.Id'>Submit Bug</a>
+                        <a href='/listbugs/@project.Id'>View Bugs</a>
+                        <a href='/editproject/@project.Id'>Edit Project</a>
+                        <a href='/deleteproject/@project.Id'>Delete Project</a>
                     </td>
                 </tr>
 
@@ -46,12 +48,12 @@ else
 }
 
 @code {
-    Project[] projects;
+    IEnumerable<Project> projects;
     string baseUrl;
 
     protected override async Task OnInitializedAsync()
     {
         baseUrl = AppSettingsService.GetBaseUrl();
-        projects = await Http.GetJsonAsync<Project[]>(baseUrl + "/api/projects/get");
+        projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi/");
     }
 }     

@@ -1,0 +1,62 @@
+﻿
+@using BugBlaze.Data.Models
+
+@page "/createbug"
+
+@inject CustomHttpClient Http
+@inject NavigationManager NavigationManager
+@inject AppSettingsService AppSettingsService
+
+<h3>Add Project</h3>
+
+<hr />
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Bug Description</label>
+                <input for="Name" class="form-control" @bind="@bug.Description" />
+            </div>
+            <div class="form-group">
+                <label for="Department" class="control-label">Component / File name / Method</label>
+                <input for="Department" class="form-control" @bind="@bug.Component" />
+            </div>
+            <div class="form-group">
+                <InputSelect @bind-Value="@bug.Severity">
+                    @foreach (var value in Enum.GetValues(typeof(Bug.BugSeverity)))
+                    {
+                        <option>@value</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateNewBug" value="Save" />
+                <input type="button" class="btn" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@code {
+
+    Bug bug = new Bug();
+    string baseUrl;
+
+    protected async Task CreateNewBug()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        await Http.PostJsonAsync(baseUrl + "/api/bugsapi/create", bug);
+        NavigationManager.NavigateTo("listbugs");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("listbugs");
+    }
+
+}
