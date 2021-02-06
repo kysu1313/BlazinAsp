@@ -12,47 +12,47 @@ namespace BugBlaze.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserModelsController : ControllerBase
+    public class BugsApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public UserModelsController(ApplicationDbContext context)
+        public BugsApiController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/UserModels
+        // GET: api/Bugs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetUserModels()
+        public async Task<ActionResult<IEnumerable<Bug>>> GetBugs()
         {
-            return await _context.UserModels.ToListAsync();
+            return await _context.Bugs.ToListAsync();
         }
 
-        // GET: api/UserModels/5
+        // GET: api/Bugs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserModel>> GetUserModel(int id)
+        public async Task<ActionResult<Bug>> GetBug(int id)
         {
-            var userModel = await _context.UserModels.FindAsync(id);
+            var bug = await _context.Bugs.FindAsync(id);
 
-            if (userModel == null)
+            if (bug == null)
             {
                 return NotFound();
             }
 
-            return userModel;
+            return bug;
         }
 
-        // PUT: api/UserModels/5
+        // PUT: api/Bugs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserModel(int id, UserModel userModel)
+        public async Task<IActionResult> PutBug(int id, Bug bug)
         {
-            if (id != userModel.Id)
+            if (id != bug.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(userModel).State = EntityState.Modified;
+            _context.Entry(bug).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace BugBlaze.Api
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserModelExists(id))
+                if (!BugExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace BugBlaze.Api
             return NoContent();
         }
 
-        // POST: api/UserModels
+        // POST: api/Bugs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserModel>> PostUserModel(UserModel userModel)
+        public async Task<ActionResult<Bug>> PostBug(Bug bug)
         {
-            _context.UserModels.Add(userModel);
+            _context.Bugs.Add(bug);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserModel", new { id = userModel.Id }, userModel);
+            return CreatedAtAction("GetBug", new { id = bug.Id }, bug);
         }
 
-        // DELETE: api/UserModels/5
+        // DELETE: api/Bugs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserModel(int id)
+        public async Task<IActionResult> DeleteBug(int id)
         {
-            var userModel = await _context.UserModels.FindAsync(id);
-            if (userModel == null)
+            var bug = await _context.Bugs.FindAsync(id);
+            if (bug == null)
             {
                 return NotFound();
             }
 
-            _context.UserModels.Remove(userModel);
+            _context.Bugs.Remove(bug);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserModelExists(int id)
+        private bool BugExists(int id)
         {
-            return _context.UserModels.Any(e => e.Id == id);
+            return _context.Bugs.Any(e => e.Id == id);
         }
     }
 }
