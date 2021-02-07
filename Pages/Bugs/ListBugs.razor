@@ -11,7 +11,7 @@
 </p>
 @if (bugs == null)
 {
-    <img src="./basicloader.gif" />
+    <img src="./spinner.gif" />
 
 }
 else
@@ -46,26 +46,31 @@ else
 }
 
 @code {
-    Bug[] bugs;
-    Project[] projects;
-    Project[] relatedProjects;
-    Dictionary<Bug, Project> items = new Dictionary<Bug, Project>();
+
+    [Parameter]
     public string id { get; set; }
-    string baseUrl;
 
-    protected override async Task OnInitializedAsync()
+    IEnumerable<Bug> bugs;
+    @*Bug[] bugs;*@
+    @*Project[] projects;*@
+IEnumerable<Project> projects;
+Bug[] associatedBugs;
+string baseUrl;
+
+protected override async Task OnInitializedAsync()
+{
+    int Id = int.Parse(id);
+    baseUrl = AppSettingsService.GetBaseUrl();
+    bugs = await Http.GetJsonAsync<IEnumerable<Bug>>(baseUrl + "/api/bugsapi");
+    projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi");
+
+    foreach(Bug bug in bugs)
     {
-        baseUrl = AppSettingsService.GetBaseUrl();
-        bugs = await Http.GetJsonAsync<Bug[]>(baseUrl + "/api/bugsapi/get");
-        projects = await Http.GetJsonAsync<Project[]>(baseUrl + "/api/projectsapi/get");
-
-        foreach(Project project in projects)
+        if (bug.ProjectId == Id)
         {
-            if (project.Id == int.Parse(id))
-            {
-                relatedProjects.Append(project);
-            }
+            associatedBugs.Append(bug);
         }
-
     }
+
+}
 }     

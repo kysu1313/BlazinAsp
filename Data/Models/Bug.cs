@@ -11,16 +11,17 @@ namespace BugBlaze.Data.Models
         [Key]
         public int Id { get; set; }
         public string Description { get; set; }
+        [Required]
         public string Component { get; set; }
         public int ProjectId { get; set; }
         public BugSeverity Severity { get; set; }
 
         public enum BugSeverity
         {
-            low = 1,
-            medium = 2,
-            high = 3,
-            critical = 4
+            Low = 1,
+            Medium = 2,
+            High = 3,
+            Critical = 4
         }
     }
 

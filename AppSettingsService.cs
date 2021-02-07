@@ -16,6 +16,7 @@ namespace BugBlaze
         public string GetBaseUrl()
         {
             return _config.GetValue<string>("MySettings:BaseUrl");
+            //return _config.GetValue<string>("iisSettings:applicationUrl");
         }
     }
 }

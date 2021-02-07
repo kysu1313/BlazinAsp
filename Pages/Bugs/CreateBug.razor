@@ -1,16 +1,17 @@
-﻿
-@using BugBlaze.Data.Models
+﻿@using BugBlaze.Data.Models
 
-@page "/createbug"
+@page "/createbug/{id}"
+
 
 @inject CustomHttpClient Http
 @inject NavigationManager NavigationManager
 @inject AppSettingsService AppSettingsService
 
-<h3>Add Project</h3>
+<h3>Add Bug</h3>
 
 <hr />
 <form>
+    @*<a>HELLO TEST</a>*@
     <div class="row">
         <div class="col-md-8">
             <div class="form-group">
@@ -18,16 +19,17 @@
                 <input for="Name" class="form-control" @bind="@bug.Description" />
             </div>
             <div class="form-group">
-                <label for="Department" class="control-label">Component / File name / Method</label>
-                <input for="Department" class="form-control" @bind="@bug.Component" />
+                <label for="Component" class="control-label">Component / File name / Method</label>
+                <input for="Component" class="form-control" @bind="@bug.Component" />
             </div>
             <div class="form-group">
-                <InputSelect @bind-Value="@bug.Severity">
-                    @foreach (var value in Enum.GetValues(typeof(Bug.BugSeverity)))
-                    {
-                        <option>@value</option>
-                    }
-                </InputSelect>
+                <label for="Severity" class="control-label">Severity: </label>
+                <select class="dropdown" @bind="@bug.Severity">
+                    <option class="dropdown-item" value="val1">Low</option>
+                    <option class="dropdown-item" value="val2">Medium</option>
+                    <option class="dropdown-item" value="val3">High</option>
+                    <option class="dropdown-item" value="val4">Critical</option>
+                </select>
             </div>
         </div>
     </div>
@@ -41,22 +43,26 @@
     </div>
 </form>
 
-
 @code {
-
     Bug bug = new Bug();
     string baseUrl;
 
+    [Parameter]
+    public string id { get; set; }
+    int Id;
+
     protected async Task CreateNewBug()
     {
+        string strId = id;
+        Id = int.Parse(strId);
+        bug.ProjectId = Id;
         baseUrl = AppSettingsService.GetBaseUrl();
-        await Http.PostJsonAsync(baseUrl + "/api/bugsapi/create", bug);
-        NavigationManager.NavigateTo("listbugs");
+        await Http.PutJsonAsync(baseUrl + "/api/bugsapi/post/", bug);
+        NavigationManager.NavigateTo("/listbugs/id");
     }
 
     void Cancel()
     {
-        NavigationManager.NavigateTo("listbugs");
+        NavigationManager.NavigateTo("/listbugs");
     }
-
 }

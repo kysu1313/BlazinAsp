@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace BugBlaze
@@ -41,6 +42,7 @@ namespace BugBlaze
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<CustomHttpClient>();
+            //services.AddSingleton<HttpClient>();
             services.AddSingleton<AppSettingsService>();
         }
 
