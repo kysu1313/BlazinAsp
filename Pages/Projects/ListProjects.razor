@@ -7,11 +7,11 @@
 
 <h2>Projects</h2>
 <p>
-    <a href="/addproject">Create New Project</a>
+    <a class="btn btn-primary" href="/createproject">Create New Project</a>
 </p>
 @if (projects == null)
 {
-    <img src="./basicloader.gif" />
+    <img src="./spinner.gif" />
 
 }
 else
@@ -19,10 +19,10 @@ else
     <table class='table'>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Designation</th>
-                <th>Company</th>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Language</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -33,10 +33,11 @@ else
                     <td>@project.Description</td>
                     <td>@project.Language</td>
                     <td>
-                        <a href='/createbug/@project.Id'>Submit Bug</a>
-                        <a href='/listbugs/@project.Id'>View Bugs</a>
-                        <a href='/editproject/@project.Id'>Edit Project</a>
-                        <a href='/deleteproject/@project.Id'>Delete Project</a>
+                        
+                        <a class="btn btn-success" href="/createbug/@project.Id">Submit Bug</a>
+                        <a class="btn btn-primary" href='/listbugs/@project.Id'>View Bugs</a>
+                        <a class="btn btn-info" href='/editproject/@project.Id'>Edit Project</a>
+                        <a class="btn btn-danger" href='/deleteproject/@project.Id'>Delete Project</a>
                     </td>
                 </tr>
 
@@ -51,9 +52,11 @@ else
     IEnumerable<Project> projects;
     string baseUrl;
 
+    HttpClient http = new HttpClient();
+
     protected override async Task OnInitializedAsync()
     {
         baseUrl = AppSettingsService.GetBaseUrl();
-        projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi/");
+        projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi");
     }
 }     

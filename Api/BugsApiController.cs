@@ -73,7 +73,7 @@ namespace BugBlaze.Api
             return NoContent();
         }
 
-        // POST: api/Bugs
+        // POST: api/BugsApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Bug>> PostBug(Bug bug)
@@ -84,7 +84,7 @@ namespace BugBlaze.Api
             return CreatedAtAction("GetBug", new { id = bug.Id }, bug);
         }
 
-        // DELETE: api/Bugs/5
+        // DELETE: api/BugsApi/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBug(int id)
         {
