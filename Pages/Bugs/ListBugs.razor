@@ -7,7 +7,7 @@
 
 <h2>Bugs</h2>
 <p>
-    <a href="/addproject">Create New Employee</a>
+    <a href="/addproject">Create New Bug</a>
 </p>
 @if (bugs == null)
 {
@@ -16,22 +16,45 @@
 }
 else
 {
+<h3>@project.ProjectName</h3>
     <table class='table'>
         <thead>
             <tr>
-                <th>Project Name</th>
                 <th>Description</th>
                 <th>Component</th>
-                <th>Company</th>
+                <th>Severity</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var bug in bugs)
             {
-                <tr>
-                    <td>@bug.Description</td>
-                    <td>@bug.Component</td>
-                    <td>@bug.</td>
+            <tr>
+                <td>@bug.Description</td>
+                <td>@bug.Component</td>
+                <td>
+                    @{
+                        switch (bug.Severity)
+                        {
+                            case 1:
+                                <button style="display:inline-block;" class="btn btn-primary disabled">Low</button>
+                                break;
+                            case 2:
+                <button style="display:inline-block;" class="btn btn-success disabled">Medium</button>
+                                    break;
+                                case 3:
+                <button style="display:inline-block;" class="btn btn-warning disabled">High</button>
+                                    break;
+                                case 4:
+                <button style="display:inline-block;" class="btn btn-danger disabled">Critical</button>
+                                    break;
+                                default:
+                <button style="display:inline-block;" class="btn btn-success disabled">Medium</button>
+                                    break;
+                            }
+                    }
+
+                </td>
                     <td>
                         <a href='/editbug/@bug.Id'>Edit</a>
                         <a href='/deletebug/@bug.Id'>Delete</a>
@@ -45,32 +68,38 @@ else
     </table>
 }
 
-@code {
+                            @code {
 
     [Parameter]
-    public string id { get; set; }
+                            public string id { get; set; }
 
-    IEnumerable<Bug> bugs;
+                            IEnumerable<Bug> bugs;
     @*Bug[] bugs;*@
     @*Project[] projects;*@
-IEnumerable<Project> projects;
-Bug[] associatedBugs;
-string baseUrl;
+    Project project;
+                            List<Bug> associatedBugs;
+                            string baseUrl;
 
-protected override async Task OnInitializedAsync()
-{
-    int Id = int.Parse(id);
-    baseUrl = AppSettingsService.GetBaseUrl();
-    bugs = await Http.GetJsonAsync<IEnumerable<Bug>>(baseUrl + "/api/bugsapi");
-    projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi");
+                            protected override async Task OnInitializedAsync()
+                            {
+                                int Id = int.Parse(id);
+                                associatedBugs = new List<Bug>();
+                                baseUrl = AppSettingsService.GetBaseUrl();
+                                bugs = await Http.GetJsonAsync<IEnumerable<Bug>>(baseUrl + "/api/bugsapi");
+                                project = await Http.GetJsonAsync<Project>(baseUrl + "/api/projectsapi/" + Id);
 
-    foreach(Bug bug in bugs)
-    {
-        if (bug.ProjectId == Id)
-        {
-            associatedBugs.Append(bug);
-        }
-    }
+                                if (bugs != null)
+                                {
+                                    foreach (Bug bug in bugs)
+                                    {
+                                        if (bug.ProjectId == id)
+                                        {
+                                            associatedBugs.Append<Bug>(bug);
+                                        }
+                                    }
+                                }
 
-}
-}     
+
+
+                            }
+                        }     

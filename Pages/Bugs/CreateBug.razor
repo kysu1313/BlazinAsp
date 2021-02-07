@@ -25,10 +25,10 @@
             <div class="form-group">
                 <label for="Severity" class="control-label">Severity: </label>
                 <select class="dropdown" @bind="@bug.Severity">
-                    <option class="dropdown-item" value="val1">Low</option>
-                    <option class="dropdown-item" value="val2">Medium</option>
-                    <option class="dropdown-item" value="val3">High</option>
-                    <option class="dropdown-item" value="val4">Critical</option>
+                    <option class="dropdown-item" value="1">Low</option>
+                    <option class="dropdown-item" value="2">Medium</option>
+                    <option class="dropdown-item" value="3">High</option>
+                    <option class="dropdown-item" value="4">Critical</option>
                 </select>
             </div>
         </div>
@@ -54,15 +54,15 @@
     protected async Task CreateNewBug()
     {
         string strId = id;
-        Id = int.Parse(strId);
-        bug.ProjectId = Id;
+        @*Id = Int32.Parse(strId);*@
+        bug.ProjectId = strId;
         baseUrl = AppSettingsService.GetBaseUrl();
-        await Http.PutJsonAsync(baseUrl + "/api/bugsapi/post/", bug);
+        await Http.PutJsonAsync(baseUrl + "/api/bugsapi", bug);
         NavigationManager.NavigateTo("/listbugs/id");
     }
 
     void Cancel()
     {
-        NavigationManager.NavigateTo("/listbugs");
+        NavigationManager.NavigateTo("/listbugs/id");
     }
 }

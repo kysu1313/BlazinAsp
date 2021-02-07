@@ -52,11 +52,11 @@
     protected async Task UpdateEmployee()
     {
         await Http.PutJsonAsync(baseUrl + "/api/projectsapi/edit/" + id, project);
-        NavigationManager.NavigateTo("listprojects");
+        NavigationManager.NavigateTo("/listprojects");
     }
 
     void Cancel()
     {
-        NavigationManager.NavigateTo("listprojects");
+        NavigationManager.NavigateTo("/listprojects");
     }
 }     

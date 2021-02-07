@@ -13,8 +13,8 @@ namespace BugBlaze.Data.Models
         public string Description { get; set; }
         [Required]
         public string Component { get; set; }
-        public int ProjectId { get; set; }
-        public BugSeverity Severity { get; set; }
+        public string ProjectId { get; set; }
+        public int Severity { get; set; }
 
         public enum BugSeverity
         {
