@@ -1,7 +1,27 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<div class="jumbotron">
+    <h2 class="ju">Welcome to BugBlaze!</h2>
+    <br/>
+    <p>Link your github account to easily track your current projects and fix bugs fast!</p>
+</div>
 
-Welcome to your new app.
+<div class="card-group">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Create a Project</h5>
+            <p class="card-text">Get started by adding your projects.</p>
+            <a href="/createproject" class="btn btn-primary">Create</a>
+        </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">View Existing Projects</h5>
+            <p class="card-text">Take a look at some of the existing projects on the site. </p>
+            <a href="/listprojects" class="btn btn-primary">Explore</a>
+        </div>
+    </div>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+
