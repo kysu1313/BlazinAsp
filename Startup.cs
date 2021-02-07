@@ -44,6 +44,7 @@ namespace BugBlaze
             services.AddSingleton<CustomHttpClient>();
             //services.AddSingleton<HttpClient>();
             services.AddSingleton<AppSettingsService>();
+            //services.AddAuthentication().AddGithub()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +78,9 @@ namespace BugBlaze
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            //app.UseFacebookLogin
+            
         }
     }
 }

@@ -57,7 +57,7 @@
         @*Id = Int32.Parse(strId);*@
         bug.ProjectId = strId;
         baseUrl = AppSettingsService.GetBaseUrl();
-        await Http.PutJsonAsync(baseUrl + "/api/bugsapi", bug);
+        await Http.PostJsonAsync(baseUrl + "/api/bugsapi/", bug);
         NavigationManager.NavigateTo("/listbugs/id");
     }
 
