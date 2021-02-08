@@ -1,22 +1,16 @@
 using BugBlaze.Areas.Identity;
 using BugBlaze.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Owin.Security.Provider;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+
 
 namespace BugBlaze
 {
@@ -38,6 +32,12 @@ namespace BugBlaze
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //services.Configure<ExternalAuthenticationOptions>(options =>
+            //{
+            //    options.SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType;
+            //});
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -45,7 +45,45 @@ namespace BugBlaze
             services.AddSingleton<CustomHttpClient>();
             //services.AddSingleton<HttpClient>();
             services.AddSingleton<AppSettingsService>();
-            //services.AddAuthentication().AddGithub()
+
+
+            services.AddAuthentication().AddFacebook(options => { 
+                options.AppId = Configuration["Facebok:AppId"];
+                options.AppSecret = Configuration["Facebook:AppToken"];
+            });
+
+            services.AddAuthentication().AddGoogle(options => 
+            {
+                options.ClientId = Configuration["Google:ClientId"];
+                options.ClientSecret = Configuration["Google:ClientSecret"];
+                options.CallbackPath = new PathString("/signin-google-token");
+                //options.AuthorizationEndpoint = GoogleAuthenticationDefaults.AuthorizationEndpoint;
+                //options.TokenEndpoint = GoogleAuthenticationDefaults.TokenEndpoint;
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+            });
+
+            //services.AddAuthentication().
+
+            services.AddAuthentication().AddGitHub(options => 
+            {
+                options.ClientId = Configuration["GitHub:ClientId"];
+                options.ClientSecret = Configuration["GitHub:ClientSecret"];
+                options.CallbackPath = new PathString("/signin-github");
+                options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                options.UserInformationEndpoint = "https://api.github.com/user";
+                options.Scope.Add("repo, " +
+                    "repo:status, " +
+                    "repo_deployment, " +
+                    "public_repo, " +
+                    "repo:invite, " +
+                    "admin:org, " +
+                    "notifications");
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,29 +97,19 @@ namespace BugBlaze
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-            //app.UseGithubLogin();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-
-            //app.UseFacebookLogin
-            
         }
     }
 }

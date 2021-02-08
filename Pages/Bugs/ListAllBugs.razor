@@ -1,6 +1,6 @@
 ﻿@using BugBlaze.Data.Models
 
-@page "/listbugs/{id}"
+@page "/listallbugs"
 
 @inject CustomHttpClient Http
 @inject AppSettingsService AppSettingsService
@@ -17,10 +17,11 @@
 }
 else
 {
-    <h3>@project.ProjectName</h3>
+    <h3>All Bugs</h3>
     <table class='table'>
         <thead>
             <tr>
+                <th>Project</th>
                 <th>Description</th>
                 <th>Component</th>
                 <th>Severity</th>
@@ -29,14 +30,15 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var bug in bugs)
+            @foreach (var key in projBug)
             {
             <tr>
-                <td>@bug.Description</td>
-                <td>@bug.Component</td>
+                <td>@key.Value.ProjectName</td>
+                <td>@key.Key.Description</td>
+                <td>@key.Key.Component</td>
                 <td>
                     @{
-                        switch (bug.Severity)
+                        switch (key.Key.Severity)
                         {
                             case 1:
                                 <span class="badge rounded-pill bg-primary text-light" id="colored-pill">Low</span>
@@ -55,10 +57,11 @@ else
                                 break;
                         }
                     }
+
                 </td>
                 <td>
                     @{
-                        if (bug.Resolved)
+                        if (key.Key.Resolved)
                         {
                             <span class="badge rounded-pill bg-success text-light" id="colored-pill">Resolved</span>
                         }
@@ -69,16 +72,16 @@ else
                     }
                 </td>
                 <td class="btn-group">
-                    @*<button class="btn btn-info rounded-pill" href='/editbug/@bug.Id'>Edit</button>
-        <button class="btn btn-danger rounded-pill" href='/deletebug/@bug.Id'>Delete</button>*@
-                    <button type="button" class="btn btn-primary has-icon" href='/editbug/@bug.Id'>
+                    @*<button class="btn btn-info rounded-pill" href='/editbug/@key.Key.Id'>Edit</button>*@
+                    <button type="button" class="btn btn-primary has-icon" href='/editbug/@key.Key.Id'>
                         <i class="bi bi-pencil-square"></i>
                         <span>Edit</span>
                     </button>
-                    <button type="button" class="btn btn-danger has-icon" href='/deletebug/@bug.Id'>
+                    <button type="button" class="btn btn-danger has-icon" href='/deletebug/@key.Key.Id'>
                         <i class="bi bi-trash-fill"></i>
                         <span>Delete</span>
                     </button>
+                    @*<button class="btn btn-danger rounded-pill" href='/deletebug/@key.Key.Id'>Delete</button>*@
                 </td>
             </tr>
 
@@ -94,37 +97,36 @@ else
     [Parameter]
     public string id { get; set; }
 
-    protected IEnumerable<Bug> bugs;
-    protected Project project;
-    protected List<Bug> associatedBugs;
-    protected string baseUrl;
-    protected string fontSize = "20px";
+    IEnumerable<Bug> bugs;
+    @*Bug[] bugs;*@
+    @*Project[] projects;*@
+IEnumerable<Project> projects;
+Dictionary<Bug, Project> projBug;
+
+string baseUrl;
 
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        @*int Id = int.Parse(id);*@
-    associatedBugs = new List<Bug>();
+protected override async Task OnInitializedAsync()
+{
+    projBug = new Dictionary<Bug, Project>();
     baseUrl = AppSettingsService.GetBaseUrl();
     bugs = await Http.GetJsonAsync<IEnumerable<Bug>>(baseUrl + "/api/bugsapi");
-    project = await Http.GetJsonAsync<Project>(baseUrl + "/api/projectsapi/" + id);
+    projects = await Http.GetJsonAsync<IEnumerable<Project>>(baseUrl + "/api/projectsapi");
 
     if (bugs != null)
     {
         foreach (Bug bug in bugs)
         {
-            if (bug.ProjectId == id)
+            foreach (Project proj in projects)
             {
-                associatedBugs.Append<Bug>(bug);
+                if (int.Parse(bug.ProjectId) == proj.Id)
+                {
+                    projBug.Add(bug, proj);
+                }
             }
         }
     }
-}
-
-protected async Task ResolveBug()
-{
-
 }
 
 }     
