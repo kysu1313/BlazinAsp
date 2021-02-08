@@ -15,14 +15,9 @@ namespace BugBlaze.Data.Models
         public string Component { get; set; }
         public string ProjectId { get; set; }
         public int Severity { get; set; }
+        public bool Resolved { get; set; }
 
-        public enum BugSeverity
-        {
-            Low = 1,
-            Medium = 2,
-            High = 3,
-            Critical = 4
-        }
+        
     }
 
 }
