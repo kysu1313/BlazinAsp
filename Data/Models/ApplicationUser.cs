@@ -3,16 +3,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BugBlaze.Data.Models
 {
-    public class UserModel
+    public class ApplicationUser : IdentityUser
     {
-        public UserModel() { }
+        public ApplicationUser() { }
 
-        [Key]
-        public int Id { get; set; }
+        //[PersonalData]
+        //public int UserModelId { get; set; }
+        [PersonalData]
         public string GitHubUrl { get; set; }
+        [PersonalData]
         public string FirstName { get; set; }
+        [PersonalData]
         public string LastName { get; set; }
+        [PersonalData]
         public string EmailAddress { get; set; }
-        public Team OnTeam { get; set; }
+        //public Team OnTeam { get; set; }
     }
 }

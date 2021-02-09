@@ -1,8 +1,8 @@
 using BugBlaze.Areas.Identity;
 using BugBlaze.Data;
 using BugBlaze.Data.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,9 +16,6 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using System.Web;
-
 
 namespace BugBlaze
 {
@@ -42,22 +39,21 @@ namespace BugBlaze
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>(); // IdentityUser
 
-            //services.Configure<ExternalAuthenticationOptions>(options =>
-            //{
-            //    options.SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType;
-            //});
+            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddDefaultIdentity<ApplicationUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
+
+            //services.AddScoped<IUserClaimsPrincipalFactory<UserModel>, CustomUserClaimsPrincipalFactory>();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<CustomHttpClient>();
-            //services.AddSingleton<HttpClient>();
             services.AddSingleton<AppSettingsService>();
-
 
             services.AddAuthentication().AddFacebook(options => { 
                 options.AppId = Configuration["Facebok:AppId"];
@@ -119,13 +115,23 @@ namespace BugBlaze
          */
         private static Func<OAuthCreatingTicketContext, Task> OnCreatingGitHubTicket()
         {
+            //string baseUrl = GetBaseUrl();
+
             return async context =>
             {
+
+                //OAuthAuthenticationOptions ops = new OAuthAuthenticationOptions();
+
                 var fullName = context.Identity.FindFirst("urn:github:name").Value;
                 var email = context.Identity.FindFirst(ClaimTypes.Email).Value;
                 var githubUrl = context.Identity.FindFirst("urn:github:url").Value;
 
                 Console.WriteLine(fullName + ", " + email + ", " + githubUrl);
+
+                context.Identity.AddClaim(new Claim("urn:github:name", context.Identity.FindFirstValue(ClaimTypes.Name)));
+                //context.Identity.AddClaim(new Claim("urn:github:name", ));
+
+
 
                 //Todo: Add logic here to save info into database
                 //var user = await UserManager.
@@ -147,6 +153,10 @@ namespace BugBlaze
             };
         }
 
+        //private static Task<IEnumerable<UserModel>> GetJsonAsync<T>(object p)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private static Func<OAuthCreatingTicketContext, Task> OnCreatingGoogleTicket()
         {

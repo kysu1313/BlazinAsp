@@ -8,7 +8,7 @@ namespace BugBlaze.Data.Models
     public class Repository : Project
     {
         public string RepoName { get; set; }
-        public UserModel Owner { get; set; }
+        public ApplicationUser Owner { get; set; }
         public int Id { get; set; }
         public string url { get; set; }
         public string starredUrl { get; set; }

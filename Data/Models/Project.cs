@@ -11,6 +11,6 @@ namespace BugBlaze.Data.Models
         public string ProjectName { get; set; }
         public string Description { get; set; }
         public string Language { get; set; }
-        public UserModel SubmittedBy { get; set; }
+        public ApplicationUser SubmittedBy { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace BugBlaze.Data.Models
         public int Id { get; set; }
         public string TeamName { get; set; }
         public int NumMembers { get; set; }
-        public IEnumerable<UserModel> Members { get; set; }
+        public IEnumerable<ApplicationUser> Members { get; set; }
 
     }
 }

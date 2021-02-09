@@ -4,14 +4,16 @@ using BugBlaze.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BugBlaze.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210209001903_AddedOnModelCreating")]
+    partial class AddedOnModelCreating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,10 +156,6 @@ namespace BugBlaze.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -194,6 +192,9 @@ namespace BugBlaze.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -210,7 +211,7 @@ namespace BugBlaze.Data.Migrations
 
                     b.ToTable("AspNetUsers");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+                    b.HasDiscriminator<int>("Type").HasValue(0);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -297,7 +298,7 @@ namespace BugBlaze.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("BugBlaze.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("BugBlaze.Data.Models.UserModel", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
@@ -316,14 +317,17 @@ namespace BugBlaze.Data.Migrations
                     b.Property<int?>("TeamId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserModelId")
+                        .HasColumnType("int");
+
                     b.HasIndex("TeamId");
 
-                    b.HasDiscriminator().HasValue("ApplicationUser");
+                    b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("BugBlaze.Data.Models.Project", b =>
                 {
-                    b.HasOne("BugBlaze.Data.Models.ApplicationUser", "SubmittedBy")
+                    b.HasOne("BugBlaze.Data.Models.UserModel", "SubmittedBy")
                         .WithMany()
                         .HasForeignKey("SubmittedById");
 
@@ -381,7 +385,7 @@ namespace BugBlaze.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BugBlaze.Data.Models.ApplicationUser", b =>
+            modelBuilder.Entity("BugBlaze.Data.Models.UserModel", b =>
                 {
                     b.HasOne("BugBlaze.Data.Models.Team", null)
                         .WithMany("Members")
