@@ -18,7 +18,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Web;
-
+using BugBlaze.Auth;
+using IdentityServer4.AspNetIdentity;
 
 namespace BugBlaze
 {
@@ -42,17 +43,36 @@ namespace BugBlaze
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>(); // IdentityUser
+            //services.AddDefaultIdentity<UserModel>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>(); // IdentityUser
+
+            services.AddDefaultIdentity<UserModel>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                 .AddClaimsPrincipalFactory<MyUserClaimsPrincipalFactory>();
+
+            services.AddScoped<IUserClaimsPrincipalFactory<UserModel>, MyUserClaimsPrincipalFactory>();
+
+            //services.AddIdentityServer()
+            //    .AddApiAuthorization<UserModel, ApplicationDbContext>(options => {
+            //        options.IdentityResources["openid"].UserClaims.Add("role");
+            //        options.ApiResources.Single().UserClaims.Add("role");
+            //        options.IdentityResources["openid"].UserClaims.Add("org_id");
+            //        options.ApiResources.Single().UserClaims.Add("org_id");
+            //    });
+
+            //services.AddScoped<IUserClaimsPrincipalFactory<UserModel>, MyUserClaimsPrincipalFactory>();
 
             //services.Configure<ExternalAuthenticationOptions>(options =>
             //{
             //    options.SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType;
             //});
 
+
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<UserModel>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<CustomHttpClient>();
             //services.AddSingleton<HttpClient>();
@@ -105,6 +125,8 @@ namespace BugBlaze
                 options.Scope.Add("repo:invite");
                 options.Scope.Add("admin:org");
                 options.Scope.Add("notifications");
+                options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
+                options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
                 options.Events = new OAuthEvents
                 {
                     OnCreatingTicket = OnCreatingGitHubTicket()
@@ -123,24 +145,9 @@ namespace BugBlaze
             {
                 var fullName = context.Identity.FindFirst("urn:github:name").Value;
                 var email = context.Identity.FindFirst(ClaimTypes.Email).Value;
-                var githubUrl = context.Identity.FindFirst("urn:github:url").Value;
+                var githuburl = context.Identity.FindFirst("urn:github:url").Value;
 
-                Console.WriteLine(fullName + ", " + email + ", " + githubUrl);
-
-                //Todo: Add logic here to save info into database
-                //var user = await UserManager.
-
-                //string userName = string.Empty;
-
-                //if (System.Web.HttpContext.Current != null &&
-                //    System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
-                //{
-                //    System.Web.Security.MembershipUser usr = Membership.GetUser();
-                //    if (usr != null)
-                //    {
-                //        userName = usr.UserName;
-                //    }
-                //}
+                Console.WriteLine(fullName + ", " + email + ", " + githuburl);
 
                 // this Task.FromResult is purely to make the code compile as it requires a Task result
                 await Task.FromResult(true);
